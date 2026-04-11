@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tooltok_background">#0D1117</color>
+    <color name="tooltok_surface">#161B22</color>
+    <color name="tooltok_accent">#FF6B35</color>
+</resources>
