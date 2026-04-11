@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>ToolTok</title>
+  <rect width="128" height="128" rx="28" fill="#0D1117"/>
+  <rect x="16" y="16" width="96" height="96" rx="24" fill="#FF6B35"/>
+  <path d="M41 42h46v12H70v38H58V54H41z" fill="#fff"/>
+</svg>
