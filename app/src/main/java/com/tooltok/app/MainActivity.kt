@@ -6,6 +6,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
+import android.util.Log
 import android.view.View
 import android.webkit.CookieManager
 import android.webkit.DownloadListener
@@ -23,15 +27,42 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 
 class MainActivity : AppCompatActivity() {
+    private companion object {
+        const val TAG = "ToolTokAds"
+    }
+
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
     private lateinit var errorView: View
     private lateinit var errorTextView: TextView
     private lateinit var retryButton: Button
+    private val interstitialAdPolicy =
+        InterstitialAdPolicy(
+            minMillisBetweenAds = BuildConfig.ADMOB_MIN_MILLIS_BETWEEN_ADS,
+            routeChancePercent = BuildConfig.ADMOB_ROUTE_CHANCE_PERCENT,
+            scrollChancePercent = BuildConfig.ADMOB_SCROLL_CHANCE_PERCENT,
+        )
     private var fileChooserCallback: ValueCallback<Array<Uri>>? = null
+    private var interstitialAd: InterstitialAd? = null
+    private var isInterstitialLoading = false
+    private var isInterstitialShowing = false
+    private val adCheckHandler = Handler(Looper.getMainLooper())
+    private val sessionAdCheckRunnable =
+        object : Runnable {
+            override fun run() {
+                maybeShowInterstitialForSessionTick()
+                scheduleSessionAdCheck()
+            }
+        }
     private val fileChooserLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val value = WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data)
@@ -59,6 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         configureBackNavigation()
         configureWebView()
+        initializeAds()
 
         if (savedInstanceState == null) {
             webView.loadUrl(AppConfig.BASE_URL)
@@ -101,6 +133,9 @@ class MainActivity : AppCompatActivity() {
 
         webView.isVerticalScrollBarEnabled = false
         webView.isHorizontalScrollBarEnabled = false
+        webView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            maybeShowInterstitialForScroll(scrollY)
+        }
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
@@ -119,6 +154,8 @@ class MainActivity : AppCompatActivity() {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
                 progressBar.visibility = View.GONE
+                maybeShowInterstitialForRoute(url)
+                loadInterstitialIfNeeded()
             }
 
             override fun onReceivedError(
@@ -172,6 +209,99 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private fun initializeAds() {
+        MobileAds.initialize(this)
+        Log.d(TAG, "Mobile Ads initialized.")
+        loadInterstitialIfNeeded()
+        scheduleSessionAdCheck()
+    }
+
+    private fun loadInterstitialIfNeeded() {
+        if (isInterstitialLoading || interstitialAd != null) return
+        isInterstitialLoading = true
+        Log.d(TAG, "Loading interstitial.")
+
+        InterstitialAd.load(
+            this,
+            BuildConfig.ADMOB_INTERSTITIAL_AD_UNIT_ID,
+            AdRequest.Builder().build(),
+            object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    isInterstitialLoading = false
+                    Log.d(TAG, "Interstitial loaded.")
+                    interstitialAd = ad.apply {
+                        fullScreenContentCallback = object : FullScreenContentCallback() {
+                            override fun onAdShowedFullScreenContent() {
+                                isInterstitialShowing = true
+                                interstitialAdPolicy.onAdShown(SystemClock.elapsedRealtime())
+                                interstitialAd = null
+                                Log.d(TAG, "Interstitial shown.")
+                            }
+
+                            override fun onAdDismissedFullScreenContent() {
+                                isInterstitialShowing = false
+                                Log.d(TAG, "Interstitial dismissed.")
+                                loadInterstitialIfNeeded()
+                            }
+
+                            override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
+                                isInterstitialShowing = false
+                                interstitialAd = null
+                                Log.w(TAG, "Interstitial failed to show: ${adError.message}")
+                                loadInterstitialIfNeeded()
+                            }
+                        }
+                    }
+                }
+
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    isInterstitialLoading = false
+                    interstitialAd = null
+                    Log.w(TAG, "Interstitial failed to load: ${adError.message}")
+                }
+            }
+        )
+    }
+
+    private fun maybeShowInterstitialForRoute(url: String?) {
+        if (isInterstitialShowing) return
+        val nowMs = SystemClock.elapsedRealtime()
+        if (interstitialAdPolicy.shouldShowForRoute(url, nowMs)) {
+            showInterstitial()
+        }
+    }
+
+    private fun maybeShowInterstitialForScroll(scrollY: Int) {
+        if (isInterstitialShowing) return
+        val nowMs = SystemClock.elapsedRealtime()
+        if (interstitialAdPolicy.shouldShowForScroll(webView.url, scrollY, nowMs)) {
+            showInterstitial()
+        }
+    }
+
+    private fun maybeShowInterstitialForSessionTick() {
+        if (isInterstitialShowing) return
+        val nowMs = SystemClock.elapsedRealtime()
+        if (interstitialAdPolicy.shouldShowForSessionTick(webView.url, nowMs)) {
+            Log.d(TAG, "Session timer requested interstitial.")
+            showInterstitial()
+        }
+    }
+
+    private fun showInterstitial() {
+        val ad = interstitialAd ?: return
+        Log.d(TAG, "Showing interstitial.")
+        ad.show(this)
+    }
+
+    private fun scheduleSessionAdCheck() {
+        adCheckHandler.removeCallbacks(sessionAdCheckRunnable)
+        adCheckHandler.postDelayed(
+            sessionAdCheckRunnable,
+            BuildConfig.ADMOB_SESSION_CHECK_INTERVAL_MILLIS
+        )
+    }
+
     private fun openExternal(url: String): Boolean {
         if (!AppUrlPolicy.shouldOpenExternally(url)) return false
         return try {
@@ -192,7 +322,18 @@ class MainActivity : AppCompatActivity() {
         webView.saveState(outState)
     }
 
+    override fun onResume() {
+        super.onResume()
+        scheduleSessionAdCheck()
+    }
+
+    override fun onPause() {
+        adCheckHandler.removeCallbacks(sessionAdCheckRunnable)
+        super.onPause()
+    }
+
     override fun onDestroy() {
+        adCheckHandler.removeCallbacks(sessionAdCheckRunnable)
         fileChooserCallback?.onReceiveValue(null)
         fileChooserCallback = null
         webView.destroy()
