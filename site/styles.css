@@ -101,6 +101,12 @@ figcaption {
   font-size: 1.05rem;
 }
 
+.release-meta {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

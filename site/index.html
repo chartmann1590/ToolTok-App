@@ -19,6 +19,7 @@
     <link rel="canonical" href="https://chartmann1590.github.io/ToolTok-App/" />
     <link rel="icon" href="./assets/tooltok-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./app.js"></script>
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content="ToolTok Android App | Download the Latest APK" />
@@ -55,7 +56,6 @@
         "url": "https://chartmann1590.github.io/ToolTok-App/",
         "downloadUrl": "https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk",
         "installUrl": "https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk",
-        "softwareVersion": "1.0.1",
         "description": "ToolTok for Android wraps the live ToolTok experience in a dedicated Android app with fast access to curated AI, creator, automation, and small-business video workflows.",
         "image": [
           "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-home.png",
@@ -89,8 +89,15 @@
             Browse curated AI, creator, automation, and small-business workflows without opening a browser tab.
             The Android app points at the hosted ToolTok platform and stays current with the live site.
           </p>
+          <p class="release-meta" data-release-status>
+            Download always points to the newest GitHub release build published from <code>main</code>.
+          </p>
           <div class="actions">
-            <a class="button primary" href="https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk">
+            <a
+              class="button primary"
+              href="https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk"
+              data-latest-apk-url
+            >
               Download APK
             </a>
             <a class="button secondary" href="https://tooltok.vercel.app/" target="_blank" rel="noreferrer">
@@ -136,7 +143,7 @@
             </article>
             <article>
               <h3>Reliable release flow</h3>
-              <p>Tagged releases build a signed APK in GitHub Actions and publish it automatically.</p>
+              <p>Every push to <code>main</code> builds a signed APK in GitHub Actions and publishes it automatically.</p>
             </article>
           </div>
         </section>
@@ -172,7 +179,12 @@
             </p>
           </div>
           <div class="link-list">
-            <a href="https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk">Latest Android APK</a>
+            <a
+              href="https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk"
+              data-latest-apk-url
+            >
+              Latest Android APK
+            </a>
             <a href="https://github.com/chartmann1590/ToolTok-App/releases" target="_blank" rel="noreferrer">All Android releases</a>
             <a href="https://tooltok.vercel.app/" target="_blank" rel="noreferrer">ToolTok web app</a>
             <a href="https://github.com/chartmann1590/ToolTok-App" target="_blank" rel="noreferrer">Android source code</a>
