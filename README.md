@@ -37,7 +37,18 @@ Unit tests live under `app/src/test/java/com/tooltok/app` and cover the URL/doma
 
 - Pushes to `main` run Android CI.
 - Tags like `v1.0.0` run the release workflow.
-- The release workflow builds the APK and uploads `ToolTok-release.apk` to the matching GitHub Release.
+- The release workflow writes a temporary `local.properties` from GitHub Actions secrets, builds the signed release APK and AAB, and uploads both to the matching GitHub Release.
+- The release workflow fails fast if the production AdMob or signing secrets are missing.
+
+Required GitHub Actions secrets for tagged releases:
+
+- `ADMOB_APP_ID`
+- `ADMOB_APP_OPEN_AD_UNIT_ID`
+- `ADMOB_BANNER_AD_UNIT_ID`
+- `ANDROID_UPLOAD_KEYSTORE_BASE64`
+- `ANDROID_UPLOAD_KEYSTORE_PASSWORD`
+- `ANDROID_UPLOAD_KEY_ALIAS`
+- `ANDROID_UPLOAD_KEY_PASSWORD`
 
 That makes the latest download URL stable:
 

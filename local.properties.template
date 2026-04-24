@@ -1,0 +1,10 @@
+# Merge these ad settings into your local.properties file.
+# local.properties stays ignored by Git, while this template can be committed safely.
+tooltok.ads.enabled=false
+tooltok.ads.appId=ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy
+tooltok.ads.appOpenAdUnitId=ca-app-pub-xxxxxxxxxxxxxxxx/zzzzzzzzzz
+tooltok.ads.bannerAdUnitId=ca-app-pub-xxxxxxxxxxxxxxxx/aaaaaaaaaa
+tooltok.signing.storeFile=play-store/generated/signing/ToolTok-upload.jks
+tooltok.signing.storePassword=change-me
+tooltok.signing.keyAlias=tooltok-upload
+tooltok.signing.keyPassword=change-me
