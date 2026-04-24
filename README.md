@@ -2,7 +2,11 @@
 
 ToolTok for Android is a native Android shell around the live ToolTok web app at `https://tooltok.vercel.app`. It keeps the Android experience simple and reliable while reusing the production feed, newsletter flow, auth, and admin pages already running on Vercel.
 
-Landing site:
+[![Android E2E](https://github.com/chartmann1590/ToolTok-App/actions/workflows/android-e2e.yml/badge.svg)](https://github.com/chartmann1590/ToolTok-App/actions/workflows/android-e2e.yml)
+[![Android Release](https://github.com/chartmann1590/ToolTok-App/actions/workflows/android-release.yml/badge.svg)](https://github.com/chartmann1590/ToolTok-App/actions/workflows/android-release.yml)
+[![GitHub Pages](https://github.com/chartmann1590/ToolTok-App/actions/workflows/github-pages.yml/badge.svg)](https://github.com/chartmann1590/ToolTok-App/actions/workflows/github-pages.yml)
+
+Website:
 
 `https://chartmann1590.github.io/ToolTok-App/`
 

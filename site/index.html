@@ -31,7 +31,7 @@
     <meta property="og:site_name" content="ToolTok Android App" />
     <meta
       property="og:image"
-      content="https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-home.png"
+      content="https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/home-feed.png"
     />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -42,7 +42,7 @@
     />
     <meta
       name="twitter:image"
-      content="https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-home.png"
+      content="https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/home-feed.png"
     />
 
     <script type="application/ld+json">
@@ -58,14 +58,16 @@
         "installUrl": "https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk",
         "description": "ToolTok for Android wraps the live ToolTok experience in a dedicated Android app with fast access to curated AI, creator, automation, and small-business video workflows.",
         "image": [
-          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-home.png",
-          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-scroll.png",
-          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-deep.png"
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/home-feed.png",
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/ai-tools.png",
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/feed-deep.png"
         ],
         "screenshot": [
-          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-home.png",
-          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-scroll.png",
-          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/feed-deep.png"
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/home-feed.png",
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/ai-tools.png",
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/feed-deep.png",
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/about.png",
+          "https://chartmann1590.github.io/ToolTok-App/assets/screenshots/release/newsletter.png"
         ],
         "offers": {
           "@type": "Offer",
@@ -115,10 +117,8 @@
         </div>
         <div class="hero-card">
           <img
-            src="./assets/screenshots/feed-home.png"
+            src="./assets/screenshots/release/home-feed.png"
             alt="ToolTok Android app home feed screenshot"
-            width="1008"
-            height="2244"
           />
         </div>
       </header>
@@ -150,23 +150,52 @@
 
         <section class="section">
           <div class="section-copy">
-            <h2>Real screenshots</h2>
+            <h2>Promo preview</h2>
             <p>
-              These screenshots were captured from the running ToolTok Android app on a connected device during validation.
+              This short promo clip was rendered from the release build assets and matches the current Android app listing media.
+            </p>
+          </div>
+          <div class="promo-card">
+            <video
+              class="promo-video"
+              controls
+              playsinline
+              preload="metadata"
+              poster="./assets/video/release-promo-poster.png"
+            >
+              <source src="./assets/video/release-promo-vertical.mp4" type="video/mp4" />
+              Your browser does not support embedded video.
+            </video>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-copy">
+            <h2>Release screenshots</h2>
+            <p>
+              These tracked screenshots come from the release build and cover different parts of the app instead of repeating the same screen.
             </p>
           </div>
           <div class="gallery">
             <figure>
-              <img src="./assets/screenshots/feed-home.png" alt="ToolTok Android app feed home screen" width="1008" height="2244" />
+              <img src="./assets/screenshots/release/home-feed.png" alt="ToolTok Android app home feed screen" />
               <figcaption>Home feed</figcaption>
             </figure>
             <figure>
-              <img src="./assets/screenshots/feed-scroll.png" alt="ToolTok Android app feed after scrolling" width="1008" height="2244" />
-              <figcaption>Scrolling the feed</figcaption>
+              <img src="./assets/screenshots/release/ai-tools.png" alt="ToolTok Android app AI tools screen" />
+              <figcaption>AI tools</figcaption>
             </figure>
             <figure>
-              <img src="./assets/screenshots/feed-deep.png" alt="ToolTok Android app deeper in the feed" width="1008" height="2244" />
+              <img src="./assets/screenshots/release/feed-deep.png" alt="ToolTok Android app deeper in the feed" />
               <figcaption>Deeper discovery</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/screenshots/release/about.png" alt="ToolTok Android app about screen" />
+              <figcaption>About page</figcaption>
+            </figure>
+            <figure>
+              <img src="./assets/screenshots/release/newsletter.png" alt="ToolTok Android app newsletter screen" />
+              <figcaption>Newsletter flow</figcaption>
             </figure>
           </div>
         </section>
