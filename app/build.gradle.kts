@@ -71,7 +71,7 @@ android {
         versionCode = 2
         versionName = "1.1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.tooltok.app.ToolTokTestRunner"
         vectorDrawables.useSupportLibrary = true
         buildConfigField("boolean", "ADS_ENABLED", adsEnabled.toString())
     }
@@ -158,4 +158,10 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads:25.2.0")
 
     testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:core-ktx:1.6.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }

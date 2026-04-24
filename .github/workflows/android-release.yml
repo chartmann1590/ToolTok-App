@@ -2,8 +2,9 @@ name: Android Release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -95,15 +96,40 @@ jobs:
       - name: Build release APK and bundle
         run: ./gradlew assembleRelease bundleRelease
 
+      - name: Compute release metadata
+        id: release_meta
+        run: |
+          version_name=$(sed -n 's/.*versionName = "\(.*\)"/\1/p' app/build.gradle.kts | head -n 1)
+          version_code=$(sed -n 's/.*versionCode = \([0-9][0-9]*\).*/\1/p' app/build.gradle.kts | head -n 1)
+
+          if [ -z "$version_name" ] || [ -z "$version_code" ]; then
+            echo "::error::Unable to parse versionName/versionCode from app/build.gradle.kts"
+            exit 1
+          fi
+
+          tag="v${version_name}-build.${GITHUB_RUN_NUMBER}"
+          title="ToolTok ${version_name} build ${GITHUB_RUN_NUMBER}"
+
+          echo "version_name=$version_name" >> "$GITHUB_OUTPUT"
+          echo "version_code=$version_code" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+
       - name: Prepare release assets
         run: |
           cp app/build/outputs/apk/release/app-release.apk ToolTok-release.apk
           cp app/build/outputs/bundle/release/app-release.aab ToolTok-release.aab
 
-      - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            ToolTok-release.apk
-            ToolTok-release.aab
-          generate_release_notes: true
+      - name: Create GitHub release and tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release_meta.outputs.tag }}
+          RELEASE_TITLE: ${{ steps.release_meta.outputs.title }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            ToolTok-release.apk \
+            ToolTok-release.aab \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$RELEASE_TITLE" \
+            --generate-notes

@@ -26,7 +26,7 @@ class ToolTokApplication : Application(), Application.ActivityLifecycleCallbacks
     override fun onCreate() {
         super<Application>.onCreate()
 
-        if (!BuildConfig.ADS_ENABLED) {
+        if (!AdRuntimeConfig.adsEnabled()) {
             Log.d(TAG, "Ads disabled in local.properties.")
             return
         }
@@ -49,7 +49,7 @@ class ToolTokApplication : Application(), Application.ActivityLifecycleCallbacks
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
 
     override fun onActivityStarted(activity: Activity) {
-        if (!BuildConfig.ADS_ENABLED) return
+        if (!AdRuntimeConfig.adsEnabled()) return
         if (!appOpenAdManager.isShowingAd) {
             currentActivity = activity
         }
@@ -77,7 +77,7 @@ class ToolTokApplication : Application(), Application.ActivityLifecycleCallbacks
         private var loadTimeMs = 0L
 
         fun loadAd(context: Application) {
-            if (!BuildConfig.ADS_ENABLED ||
+            if (!AdRuntimeConfig.adsEnabled() ||
                 BuildConfig.ADMOB_APP_OPEN_AD_UNIT_ID.isBlank() ||
                 isLoadingAd ||
                 isAdAvailable()
@@ -110,7 +110,7 @@ class ToolTokApplication : Application(), Application.ActivityLifecycleCallbacks
         }
 
         fun showAdIfAvailable(activity: Activity) {
-            if (!BuildConfig.ADS_ENABLED || BuildConfig.ADMOB_APP_OPEN_AD_UNIT_ID.isBlank()) {
+            if (!AdRuntimeConfig.adsEnabled() || BuildConfig.ADMOB_APP_OPEN_AD_UNIT_ID.isBlank()) {
                 return
             }
 

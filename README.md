@@ -33,14 +33,17 @@ adb install -r app/build/outputs/apk/release/app-release.apk
 
 Unit tests live under `app/src/test/java/com/tooltok/app` and cover the URL/domain rules that decide whether pages stay inside the app or open externally.
 
+Instrumentation tests live under `app/src/androidTest/java/com/tooltok/app` and exercise the Android shell end to end with ads disabled under the test runner for stability.
+
 ## Release flow
 
-- Pushes to `main` run Android CI.
-- Tags like `v1.0.0` run the release workflow.
-- The release workflow writes a temporary `local.properties` from GitHub Actions secrets, builds the signed release APK and AAB, and uploads both to the matching GitHub Release.
+- Pull requests run Android CI.
+- Every push to `main` runs the release workflow automatically.
+- The release workflow writes a temporary `local.properties` from GitHub Actions secrets, builds the signed release APK and AAB, creates a Git tag automatically, and publishes both assets to a new GitHub Release.
 - The release workflow fails fast if the production AdMob or signing secrets are missing.
+- Auto-generated release tags use the format `v<versionName>-build.<run_number>`.
 
-Required GitHub Actions secrets for tagged releases:
+Required GitHub Actions secrets for automatic releases:
 
 - `ADMOB_APP_ID`
 - `ADMOB_APP_OPEN_AD_UNIT_ID`

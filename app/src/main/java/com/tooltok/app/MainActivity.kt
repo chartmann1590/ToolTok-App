@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureBannerAds() {
-        if (!BuildConfig.ADS_ENABLED || BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isBlank()) {
+        if (!AdRuntimeConfig.adsEnabled() || BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isBlank()) {
             bannerAdContainer.visibility = View.GONE
             return
         }
@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadBannerAd() {
-        if (!BuildConfig.ADS_ENABLED || BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isBlank()) {
+        if (!AdRuntimeConfig.adsEnabled() || BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isBlank()) {
             bannerAdContainer.visibility = View.GONE
             destroyBannerAd()
             return
@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (BuildConfig.ADS_ENABLED && BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isNotBlank()) {
+        if (AdRuntimeConfig.adsEnabled() && BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isNotBlank()) {
             bannerAdContainer.post { loadBannerAd() }
         }
     }
