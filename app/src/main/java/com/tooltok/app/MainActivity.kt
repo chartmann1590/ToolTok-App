@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.DownloadListener
 import android.webkit.ValueCallback
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var errorTextView: TextView
     private lateinit var retryButton: Button
     private lateinit var bannerAdContainer: FrameLayout
+    private var baseWebViewBottomPadding = 0
     private var fileChooserCallback: ValueCallback<Array<Uri>>? = null
     private var bannerAdView: AdView? = null
     private val fileChooserLauncher =
@@ -63,12 +65,16 @@ class MainActivity : AppCompatActivity() {
         errorTextView = findViewById(R.id.errorTextView)
         retryButton = findViewById(R.id.retryButton)
         bannerAdContainer = findViewById(R.id.bannerAdContainer)
+        baseWebViewBottomPadding = webView.paddingBottom
 
         swipeRefreshLayout.setOnRefreshListener { webView.reload() }
-        swipeRefreshLayout.setOnChildScrollUpCallback { _, _ -> webView.scrollY > 0 }
+        swipeRefreshLayout.setOnChildScrollUpCallback { _, _ -> canWebViewScrollUp() }
         retryButton.setOnClickListener {
             showError(false)
             webView.reload()
+        }
+        bannerAdContainer.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            updateWebViewBottomInset()
         }
 
         configureBackNavigation()
@@ -134,6 +140,7 @@ class MainActivity : AppCompatActivity() {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
                 progressBar.visibility = View.GONE
+                updateWebViewBottomInset()
             }
 
             override fun onReceivedError(
@@ -190,6 +197,7 @@ class MainActivity : AppCompatActivity() {
     private fun configureBannerAds() {
         if (!AdRuntimeConfig.adsEnabled() || BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isBlank()) {
             bannerAdContainer.visibility = View.GONE
+            updateWebViewBottomInset()
             return
         }
 
@@ -202,6 +210,7 @@ class MainActivity : AppCompatActivity() {
         if (!AdRuntimeConfig.adsEnabled() || BuildConfig.ADMOB_BANNER_AD_UNIT_ID.isBlank()) {
             bannerAdContainer.visibility = View.GONE
             destroyBannerAd()
+            updateWebViewBottomInset()
             return
         }
 
@@ -216,11 +225,13 @@ class MainActivity : AppCompatActivity() {
             adListener = object : AdListener() {
                 override fun onAdLoaded() {
                     bannerAdContainer.visibility = View.VISIBLE
+                    updateWebViewBottomInset()
                     Log.d(TAG, "Banner ad loaded.")
                 }
 
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     bannerAdContainer.visibility = View.GONE
+                    updateWebViewBottomInset()
                     Log.w(TAG, "Banner ad failed to load: ${adError.message}")
                 }
             }
@@ -229,6 +240,7 @@ class MainActivity : AppCompatActivity() {
         bannerAdContainer.removeAllViews()
         bannerAdContainer.addView(bannerAdView)
         bannerAdContainer.visibility = View.GONE
+        updateWebViewBottomInset()
 
         Log.d(TAG, "Loading banner ad.")
         bannerAdView?.loadAd(AdRequest.Builder().build())
@@ -245,6 +257,70 @@ class MainActivity : AppCompatActivity() {
         bannerAdContainer.removeAllViews()
         bannerAdView?.destroy()
         bannerAdView = null
+        updateWebViewBottomInset()
+    }
+
+    internal fun canWebViewScrollUp(): Boolean = webView.canScrollVertically(-1)
+
+    internal fun updateBannerInsetForTesting(heightPx: Int, visible: Boolean) {
+        bannerAdContainer.layoutParams =
+            bannerAdContainer.layoutParams.apply {
+                height = if (visible) heightPx else ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+        bannerAdContainer.visibility = if (visible) View.VISIBLE else View.GONE
+        bannerAdContainer.measure(
+            View.MeasureSpec.makeMeasureSpec(webView.width.coerceAtLeast(1), View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(heightPx.coerceAtLeast(0), View.MeasureSpec.EXACTLY)
+        )
+        bannerAdContainer.layout(
+            bannerAdContainer.left,
+            bannerAdContainer.top,
+            bannerAdContainer.left + bannerAdContainer.measuredWidth,
+            bannerAdContainer.top + bannerAdContainer.measuredHeight
+        )
+        updateWebViewBottomInset()
+    }
+
+    internal fun currentWebViewBottomInset(): Int = webView.paddingBottom
+
+    private fun updateWebViewBottomInset() {
+        val bannerInset = if (bannerAdContainer.visibility == View.VISIBLE) bannerAdContainer.height else 0
+        val desiredBottomPadding = baseWebViewBottomPadding + bannerInset
+        if (webView.paddingBottom != desiredBottomPadding) {
+            webView.setPadding(
+                webView.paddingLeft,
+                webView.paddingTop,
+                webView.paddingRight,
+                desiredBottomPadding
+            )
+            webView.clipToPadding = false
+        }
+        injectBottomInsetIntoPage(bannerInset)
+    }
+
+    private fun injectBottomInsetIntoPage(insetPx: Int) {
+        val script =
+            """
+            (function() {
+              var inset = '${insetPx}px';
+              var styleId = 'tooltok-native-bottom-inset';
+              var style = document.getElementById(styleId);
+              if (!style) {
+                style = document.createElement('style');
+                style.id = styleId;
+                document.head.appendChild(style);
+              }
+              style.textContent =
+                ':root {' +
+                '--tooltok-native-bottom-inset:' + inset + ';' +
+                'scroll-padding-bottom: calc(' + inset + ' + env(safe-area-inset-bottom, 0px));' +
+                '}' +
+                'body {' +
+                'padding-bottom: calc(' + inset + ' + env(safe-area-inset-bottom, 0px)) !important;' +
+                '}';
+            })();
+            """.trimIndent()
+        webView.evaluateJavascript(script, null)
     }
 
     private fun openExternal(url: String): Boolean {
