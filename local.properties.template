@@ -1,9 +1,13 @@
 # Merge these ad settings into your local.properties file.
 # local.properties stays ignored by Git, while this template can be committed safely.
+# In GitHub Actions, provide matching values as repository secrets:
+# ADMOB_APP_ID, ADMOB_APP_OPEN_AD_UNIT_ID, ADMOB_BANNER_AD_UNIT_ID.
 tooltok.ads.enabled=false
 tooltok.ads.appId=ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy
 tooltok.ads.appOpenAdUnitId=ca-app-pub-xxxxxxxxxxxxxxxx/zzzzzzzzzz
 tooltok.ads.bannerAdUnitId=ca-app-pub-xxxxxxxxxxxxxxxx/aaaaaaaaaa
+# Optional local CI override for release versionCode:
+# tooltok.ci.versionCode=1234567890
 tooltok.signing.storeFile=play-store/generated/signing/ToolTok-upload.jks
 tooltok.signing.storePassword=change-me
 tooltok.signing.keyAlias=tooltok-upload

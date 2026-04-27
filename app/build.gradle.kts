@@ -30,6 +30,11 @@ val adsEnabled = localBoolean("tooltok.ads.enabled", false)
 val configuredAppId = localString("tooltok.ads.appId")
 val configuredAppOpenAdUnitId = localString("tooltok.ads.appOpenAdUnitId")
 val configuredBannerAdUnitId = localString("tooltok.ads.bannerAdUnitId")
+val ciVersionCodeOverride = (
+    findProperty("tooltokCiVersionCode") as String?
+        ?: localString("tooltok.ci.versionCode")
+).toIntOrNull()
+    ?: System.getenv("TOOLTOK_CI_VERSION_CODE")?.toIntOrNull()
 val releaseSigningStoreFile = localString("tooltok.signing.storeFile")
 val releaseSigningStorePassword = localString("tooltok.signing.storePassword")
 val releaseSigningKeyAlias = localString("tooltok.signing.keyAlias")
@@ -60,6 +65,12 @@ if (!hasReleaseSigningConfig) {
     )
 }
 
+if (System.getenv("CI") == "true" && ciVersionCodeOverride == null) {
+    logger.warn(
+        "CI versionCode override is missing. Falling back to static versionCode from Gradle."
+    )
+}
+
 android {
     namespace = "com.tooltok.app"
     compileSdk = 34
@@ -68,7 +79,7 @@ android {
         applicationId = "com.tooltok.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
+        versionCode = ciVersionCodeOverride ?: 2
         versionName = "1.1.0"
 
         testInstrumentationRunner = "com.tooltok.app.ToolTokTestRunner"

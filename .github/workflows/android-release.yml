@@ -63,6 +63,13 @@ jobs:
       - name: Grant Gradle execute permission
         run: chmod +x gradlew
 
+      - name: Generate monotonic Play Store versionCode
+        id: version_code
+        run: |
+          version_code=$(date +%s)
+          echo "version_code=$version_code" >> "$GITHUB_OUTPUT"
+          echo "TOOLTOK_CI_VERSION_CODE=$version_code" >> "$GITHUB_ENV"
+
       - name: Create release signing keystore
         env:
           ANDROID_UPLOAD_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
@@ -90,17 +97,40 @@ jobs:
           tooltok.signing.keyPassword=$ANDROID_UPLOAD_KEY_PASSWORD
           EOF
 
+      - name: Validate release ads configuration
+        run: |
+          if ! grep -q '^tooltok.ads.enabled=true$' local.properties; then
+            echo "::error::tooltok.ads.enabled must be true for release builds"
+            exit 1
+          fi
+
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest
 
       - name: Build release APK and bundle
-        run: ./gradlew assembleRelease bundleRelease
+        run: ./gradlew assembleRelease bundleRelease -PtooltokCiVersionCode="${{ steps.version_code.outputs.version_code }}"
+
+      - name: Verify release build has ads enabled
+        run: |
+          build_config="app/build/generated/source/buildConfig/release/com/tooltok/app/BuildConfig.java"
+          if [ ! -f "$build_config" ]; then
+            echo "::error::Release BuildConfig not found at $build_config"
+            exit 1
+          fi
+
+          if ! grep -q 'public static final boolean ADS_ENABLED = true;' "$build_config"; then
+            echo "::error::Release BuildConfig.ADS_ENABLED is not true"
+            exit 1
+          fi
+
+      - name: Verify release bundle is signed
+        run: jarsigner -verify -certs app/build/outputs/bundle/release/app-release.aab
 
       - name: Compute release metadata
         id: release_meta
         run: |
           version_name=$(sed -n 's/.*versionName = "\(.*\)"/\1/p' app/build.gradle.kts | head -n 1)
-          version_code=$(sed -n 's/.*versionCode = \([0-9][0-9]*\).*/\1/p' app/build.gradle.kts | head -n 1)
+          version_code="${{ steps.version_code.outputs.version_code }}"
 
           if [ -z "$version_name" ] || [ -z "$version_code" ]; then
             echo "::error::Unable to parse versionName/versionCode from app/build.gradle.kts"
