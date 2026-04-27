@@ -7,6 +7,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
+import android.view.ViewConfiguration
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -47,6 +49,11 @@ class MainActivity : AppCompatActivity() {
     private var baseWebViewBottomPadding = 0
     private var fileChooserCallback: ValueCallback<Array<Uri>>? = null
     private var bannerAdView: AdView? = null
+    private var gestureStartY = 0f
+    private var gestureStartScrollY = 0
+    private var gestureStartedNearTop = false
+    private val topEdgeRefreshZonePx by lazy { (72 * resources.displayMetrics.density).toInt() }
+    private val refreshTouchSlopPx by lazy { ViewConfiguration.get(this).scaledTouchSlop }
     private val fileChooserLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val value = WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data)
@@ -69,6 +76,7 @@ class MainActivity : AppCompatActivity() {
 
         swipeRefreshLayout.setOnRefreshListener { webView.reload() }
         swipeRefreshLayout.setOnChildScrollUpCallback { _, _ -> canWebViewScrollUp() }
+        swipeRefreshLayout.isEnabled = false
         retryButton.setOnClickListener {
             showError(false)
             webView.reload()
@@ -122,6 +130,31 @@ class MainActivity : AppCompatActivity() {
 
         webView.isVerticalScrollBarEnabled = false
         webView.isHorizontalScrollBarEnabled = false
+        webView.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    gestureStartY = event.y
+                    gestureStartScrollY = webView.scrollY
+                    gestureStartedNearTop = event.y <= topEdgeRefreshZonePx
+                    swipeRefreshLayout.isEnabled = false
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val deltaY = event.y - gestureStartY
+                    val pulledDownEnough = deltaY > refreshTouchSlopPx
+                    // Refresh only on an intentional top-edge pull-down gesture when already at page top.
+                    swipeRefreshLayout.isEnabled =
+                        gestureStartedNearTop &&
+                            gestureStartScrollY == 0 &&
+                            !canWebViewScrollUp() &&
+                            pulledDownEnough
+                }
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_CANCEL -> {
+                    swipeRefreshLayout.isEnabled = false
+                }
+            }
+            false
+        }
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
@@ -139,6 +172,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
+                swipeRefreshLayout.isEnabled = false
                 progressBar.visibility = View.GONE
                 updateWebViewBottomInset()
             }
