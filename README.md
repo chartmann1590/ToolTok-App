@@ -1,41 +1,41 @@
 # ToolTok for Android
 
-ToolTok is an Android app for discovering short, useful videos about AI tools, creator workflows, and practical ways to get work done faster.
+ToolTok helps you discover short, practical videos about AI tools, creator systems, and real workflows you can use right now.
 
-- Website: `https://chartmann1590.github.io/ToolTok-App/`
-- Download APK: `https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk`
-- Web version: `https://tooltok.vercel.app/`
+![ToolTok featured image](site/assets/marketing/featured-image-1024x500.png)
 
-## What the app is
+## Download
 
-ToolTok is built for people who want signal, not noise.
+- **Android APK:** [Install latest build](https://github.com/chartmann1590/ToolTok-App/releases/latest/download/ToolTok-release.apk)
+- **Live app site:** [ToolTok Android page](https://chartmann1590.github.io/ToolTok-App/)
+- **Web app:** [tooltok.vercel.app](https://tooltok.vercel.app/)
 
-- Curated short-form videos focused on useful tools and workflows
-- Fast browsing experience built for mobile
-- Easy jump-outs to related tools and links
-- Same live ToolTok experience you can use on the web
+## Why people use ToolTok
 
-## Screenshots
-
-![ToolTok home feed](site/assets/screenshots/release/home-feed.png)
-![ToolTok tools view](site/assets/screenshots/release/ai-tools.png)
-![ToolTok discovery feed](site/assets/screenshots/release/feed-deep.png)
-![ToolTok about page](site/assets/screenshots/release/about.png)
-![ToolTok newsletter page](site/assets/screenshots/release/newsletter.png)
+- Curated short-form videos focused on useful outcomes
+- Faster discovery of tools worth trying
+- Mobile-first browsing with quick external jump-outs
+- Same up-to-date ToolTok experience as web
 
 ## Promo Video
 
-- Promo video file (with voiceover): `site/assets/video/release-promo-vertical.mp4`
-- Poster image: `site/assets/video/release-promo-poster.png`
-- Voiceover source audio: `site/assets/video/release-promo-voiceover.wav`
+<a href="https://chartmann1590.github.io/ToolTok-App/#promo-preview" target="_blank" rel="noopener noreferrer">
+  <img src="site/assets/video/release-promo-poster.png" alt="Watch ToolTok promo video with voiceover" width="340" />
+</a>
 
-## App Marketing Assets
+Tap the thumbnail to watch the embedded promo video with voiceover on the app website.
 
-- Featured image: `site/assets/marketing/featured-image-1024x500.png`
-- App icon: `site/assets/marketing/app-icon-512.png`
+## Screenshots
 
-## App Page
+<p float="left">
+  <img src="site/assets/screenshots/release/home-feed.png" alt="ToolTok home feed" width="180" />
+  <img src="site/assets/screenshots/release/ai-tools.png" alt="ToolTok AI tools view" width="180" />
+  <img src="site/assets/screenshots/release/feed-deep.png" alt="ToolTok deeper discovery feed" width="180" />
+  <img src="site/assets/screenshots/release/about.png" alt="ToolTok about screen" width="180" />
+  <img src="site/assets/screenshots/release/newsletter.png" alt="ToolTok newsletter screen" width="180" />
+</p>
 
-The GitHub Pages app website includes the same screenshots, promo video, featured image, and icon:
+## App Assets
 
-`https://chartmann1590.github.io/ToolTok-App/`
+- **Icon:** `site/assets/marketing/app-icon-512.png`
+- **Featured image:** `site/assets/marketing/featured-image-1024x500.png`
