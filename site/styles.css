@@ -202,7 +202,8 @@ figcaption {
 
 .feature-grid,
 .gallery,
-.link-list {
+.link-list,
+.marketing-grid {
   display: grid;
   gap: 1rem;
   margin-top: 1.5rem;
@@ -225,10 +226,27 @@ figcaption {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.marketing-grid {
+  grid-template-columns: 2fr 1fr;
+}
+
 .gallery figure {
   margin: 0;
   padding: 0.9rem;
   background: var(--panel-alt);
+}
+
+.marketing-grid figure {
+  margin: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background: var(--panel-alt);
+}
+
+.marketing-grid figure:last-child img {
+  width: min(260px, 100%);
+  margin: 0 auto;
 }
 
 .promo-card {
@@ -362,7 +380,8 @@ figcaption {
   .hero,
   .feature-grid,
   .gallery,
-  .link-list {
+  .link-list,
+  .marketing-grid {
     grid-template-columns: 1fr;
   }
 
