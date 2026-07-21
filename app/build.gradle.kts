@@ -73,12 +73,12 @@ if (System.getenv("CI") == "true" && ciVersionCodeOverride == null) {
 
 android {
     namespace = "com.tooltok.app"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.tooltok.app"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = ciVersionCodeOverride ?: 2
         versionName = "1.1.0"
 
